@@ -10,7 +10,11 @@ from accelerate import Accelerator, DistributedType
 from loguru import logger as eval_logger
 from PIL import Image
 from tqdm import tqdm
-from transformers import AutoProcessor, AutoTokenizer, Qwen2VLForConditionalGeneration
+from transformers import AutoTokenizer
+
+# Use local Qwen2VL implementation instead of transformers
+from lmms_eval.models.local_models.qwen2_vl.modeling_qwen2_vl import Qwen2VLForConditionalGeneration
+from lmms_eval.models.local_models.qwen2_vl.processing_qwen2_vl import Qwen2VLProcessor
 
 # TODO: Consider moving flatten to lmms_eval.utils
 # from lmms_eval import utils
@@ -72,7 +76,7 @@ class Qwen2_VL(lmms):
             ).eval()
         else:
             self._model = Qwen2VLForConditionalGeneration.from_pretrained(pretrained, torch_dtype="auto", device_map=self.device_map).eval()
-        self.processor = AutoProcessor.from_pretrained(pretrained, max_pixels=max_pixels, min_pixels=min_pixels)
+        self.processor = Qwen2VLProcessor.from_pretrained(pretrained, max_pixels=max_pixels, min_pixels=min_pixels)
         self.max_pixels = max_pixels
         self.min_pixels = min_pixels
         self.max_num_frames = max_num_frames
